@@ -22,5 +22,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NotificationDemo"
-include(":app")
+include(":demo")
 include(":notificationcore")

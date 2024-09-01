@@ -41,8 +41,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":notificationcore"))
-//    implementation("com.github.freeskyES:notification-core:1.0.0")
+    implementation("com.github.freeskyES:notification-core:1.0.2")
 
     implementation(libs.timber)
 
