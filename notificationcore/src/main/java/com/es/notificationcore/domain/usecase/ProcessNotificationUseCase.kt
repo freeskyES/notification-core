@@ -14,6 +14,10 @@ class ProcessNotificationUseCase
             val notificationEntity = notification.toEntity()
             repository.saveNotification(notificationEntity)
         }
+
+        suspend fun getAllNotifications(): List<NotificationData> {
+            return repository.getAllNotifications().map { it.toDomain() }
+        }
     }
 
 private fun NotificationData.toEntity(): NotificationEntity =
@@ -23,3 +27,12 @@ private fun NotificationData.toEntity(): NotificationEntity =
         content = this.content,
         timestamp = this.timestamp,
     )
+
+fun NotificationEntity.toDomain(): NotificationData {
+    return NotificationData(
+        id = this.id,
+        title = this.title,
+        content = this.content,
+        timestamp = this.timestamp
+    )
+}

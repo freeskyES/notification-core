@@ -2,13 +2,18 @@ package com.es.notificationcore.presentation.initializer
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import com.es.notificationcore.data.model.NotificationEntity
+import com.es.notificationcore.domain.model.NotificationData
+import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
 import com.es.notificationcore.presentation.service.NotificationService
 import com.es.notificationcore.utils.PermissionHandler
+import javax.inject.Inject
 
-class NotificationInitializerImpl(
+class NotificationInitializerImpl @Inject constructor(
     private val activity: AppCompatActivity,
+    private val permissionHandler: PermissionHandler,
+    private val processNotificationUseCase: ProcessNotificationUseCase
 ) : NotificationInitializer {
-    private val permissionHandler: PermissionHandler = PermissionHandler(activity)
 
     override fun initializeAndStartService() {
         // 권한 처리 및 서비스 시작
@@ -24,5 +29,9 @@ class NotificationInitializerImpl(
         } else {
             activity.startService(serviceIntent)
         }
+    }
+
+    override suspend fun getNotifications(): List<NotificationData> {
+        return processNotificationUseCase.getAllNotifications()
     }
 }
