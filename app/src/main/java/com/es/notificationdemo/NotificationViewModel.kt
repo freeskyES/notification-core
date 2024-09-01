@@ -20,12 +20,22 @@ class NotificationViewModel @Inject constructor() : ViewModel() {
 
     fun fetchNotifications() {
         viewModelScope.launch {
-            val notifications = notificationInitializer.getNotifications()
-            _notifications.postValue(notifications)
+            try {
+                val notifications = notificationInitializer.getNotifications()
+                _notifications.postValue(notifications)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     fun setNotificationInitializer(notificationInitializer: NotificationInitializer) {
         this.notificationInitializer = notificationInitializer
+        initializeService()
+    }
+
+    private fun initializeService() {
+        // 서비스 초기화 및 시작
+        notificationInitializer.initializeAndStartService()
     }
 }

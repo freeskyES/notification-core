@@ -23,15 +23,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
+        binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-
-        // 서비스 초기화 및 시작
-        notificationInitializer.initializeAndStartService()
+        setContentView(binding.root)
 
         notificationViewModel.setNotificationInitializer(notificationInitializer)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         notificationViewModel.notifications.observe(this, Observer { notifications ->
             binding.textView.text = notifications.joinToString("\n\n") {
