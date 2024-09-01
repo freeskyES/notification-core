@@ -19,6 +19,7 @@ class NotificationInitializerImpl @Inject constructor(
         // 권한 처리 및 서비스 시작
         permissionHandler.checkAndRequestPermissions {
             // system 에서 활성화 처리
+            
         }
     }
 
