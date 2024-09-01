@@ -65,12 +65,12 @@ class PermissionHandler @Inject constructor(
 
     private fun checkPostNotification(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.POST_NOTIFICATIONS,
-            ) !=
-            PackageManager.PERMISSION_GRANTED
-                .also { Timber.i("postNotification : $it") }
+                ContextCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) !=
+                PackageManager.PERMISSION_GRANTED
+                    .also { Timber.i("postNotification : $it") }
 
     private fun requestPostNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -80,7 +80,9 @@ class PermissionHandler @Inject constructor(
 
     private fun isNotificationAccessEnabled(): Boolean {
         val pkgName = activity.packageName
-        val flat = Settings.Secure.getString(activity.contentResolver, "enabled_notification_listeners")
-        return flat?.split(":")?.map { ComponentName.unflattenFromString(it) }?.any { it?.packageName == pkgName } ?: false
+        val flat =
+            Settings.Secure.getString(activity.contentResolver, "enabled_notification_listeners")
+        return flat?.split(":")?.map { ComponentName.unflattenFromString(it) }
+            ?.any { it?.packageName == pkgName } ?: false
     }
 }

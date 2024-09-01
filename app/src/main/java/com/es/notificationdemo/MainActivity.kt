@@ -1,14 +1,10 @@
 package com.es.notificationdemo
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.es.notificationcore.presentation.initializer.NotificationInitializer
-import com.es.notificationcore.presentation.initializer.NotificationInitializerImpl
 import com.es.notificationdemo.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

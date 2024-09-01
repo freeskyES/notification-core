@@ -9,19 +9,19 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class NotificationRepositoryImpl
-    @Inject
-    constructor(
-        private val notificationDao: NotificationDao,
-    ) : NotificationRepository {
-        override suspend fun saveNotification(notification: NotificationEntity) {
-            withContext(Dispatchers.IO) {
-                Timber.d("saveNotification: $notification")
-                notificationDao.insertNotification(notification)
-            }
+@Inject
+constructor(
+    private val notificationDao: NotificationDao,
+) : NotificationRepository {
+    override suspend fun saveNotification(notification: NotificationEntity) {
+        withContext(Dispatchers.IO) {
+            Timber.d("saveNotification: $notification")
+            notificationDao.insertNotification(notification)
         }
-
-        override suspend fun getAllNotifications(): List<NotificationEntity> =
-            withContext(Dispatchers.IO) {
-                notificationDao.getAllNotifications()
-            }
     }
+
+    override suspend fun getAllNotifications(): List<NotificationEntity> =
+        withContext(Dispatchers.IO) {
+            notificationDao.getAllNotifications()
+        }
+}

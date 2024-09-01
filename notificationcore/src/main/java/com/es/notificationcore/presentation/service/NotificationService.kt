@@ -25,8 +25,10 @@ import javax.inject.Inject
 class NotificationService : NotificationListenerService() {
     @Inject
     lateinit var notificationParser: NotificationParser
+
     @Inject
     lateinit var processNotificationUseCase: ProcessNotificationUseCase
+
     @Inject
     lateinit var notificationHelper: NotificationHelper
 
@@ -109,7 +111,8 @@ class NotificationService : NotificationListenerService() {
     }
 
     companion object {
-        fun createServiceIntent(context: Context): Intent = Intent(context, NotificationService::class.java)
+        fun createServiceIntent(context: Context): Intent =
+            Intent(context, NotificationService::class.java)
     }
 
     override fun onListenerConnected() {

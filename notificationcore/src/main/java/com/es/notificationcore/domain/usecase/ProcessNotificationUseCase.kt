@@ -6,19 +6,19 @@ import com.es.notificationcore.domain.repository.NotificationRepository
 import javax.inject.Inject
 
 class ProcessNotificationUseCase
-    @Inject
-    constructor(
-        private val repository: NotificationRepository,
-    ) {
-        suspend fun execute(notification: NotificationData) {
-            val notificationEntity = notification.toEntity()
-            repository.saveNotification(notificationEntity)
-        }
-
-        suspend fun getAllNotifications(): List<NotificationData> {
-            return repository.getAllNotifications().map { it.toDomain() }
-        }
+@Inject
+constructor(
+    private val repository: NotificationRepository,
+) {
+    suspend fun execute(notification: NotificationData) {
+        val notificationEntity = notification.toEntity()
+        repository.saveNotification(notificationEntity)
     }
+
+    suspend fun getAllNotifications(): List<NotificationData> {
+        return repository.getAllNotifications().map { it.toDomain() }
+    }
+}
 
 private fun NotificationData.toEntity(): NotificationEntity =
     NotificationEntity(

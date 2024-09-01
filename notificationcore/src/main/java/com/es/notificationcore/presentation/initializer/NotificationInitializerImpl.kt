@@ -2,7 +2,6 @@ package com.es.notificationcore.presentation.initializer
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import com.es.notificationcore.data.model.NotificationEntity
 import com.es.notificationcore.domain.model.NotificationData
 import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
 import com.es.notificationcore.presentation.service.NotificationService
@@ -19,7 +18,6 @@ class NotificationInitializerImpl @Inject constructor(
         // 권한 처리 및 서비스 시작
         permissionHandler.checkAndRequestPermissions {
             // system 에서 활성화 처리
-            
         }
     }
 

@@ -4,15 +4,24 @@
 
 ## Overview
 
-`notification-core` is a module designed to efficiently handle notifications in Android applications. It follows Clean Architecture principles, focusing on receiving notifications, processing them in the background using a thread pool, and storing them in a Room database. This ensures a scalable and maintainable codebase, making it easier to manage notifications within your app.
+`notification-core` is a module designed to efficiently handle notifications in Android
+applications. It follows Clean Architecture principles, focusing on receiving notifications,
+processing them in the background using a thread pool, and storing them in a Room database. This
+ensures a scalable and maintainable codebase, making it easier to manage notifications within your
+app.
 
 ## Features
 
-- **Notification Reception**: Uses `NotificationListenerService` to listen for incoming notifications in real-time.
-- **Foreground Service**: Initiates a foreground service to ensure consistent execution of the notification handling process.
-- **Thread Pool Management**: Processes notifications concurrently while maintaining the order of operations to ensure no notification is lost.
-- **Room Database Integration**: Parses and stores notifications in a Room database for persistent storage, allowing access to notification data even after an app restart.
-- **Hilt Dependency Injection**: The module leverages Hilt for dependency injection, streamlining the integration process.
+- **Notification Reception**: Uses `NotificationListenerService` to listen for incoming
+  notifications in real-time.
+- **Foreground Service**: Initiates a foreground service to ensure consistent execution of the
+  notification handling process.
+- **Thread Pool Management**: Processes notifications concurrently while maintaining the order of
+  operations to ensure no notification is lost.
+- **Room Database Integration**: Parses and stores notifications in a Room database for persistent
+  storage, allowing access to notification data even after an app restart.
+- **Hilt Dependency Injection**: The module leverages Hilt for dependency injection, streamlining
+  the integration process.
 
 ## Getting Started
 
@@ -38,7 +47,8 @@ Ensure that your project is configured to use **Hilt** for dependency injection.
 
 1. **Utilize NotificationInitializer**
 
-   Use the `NotificationInitializer` interface to initialize and start the notification handling service.
+   Use the `NotificationInitializer` interface to initialize and start the notification handling
+   service.
 
    ```kotlin
    @AndroidEntryPoint
