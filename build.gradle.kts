@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("maven-publish")
 }
 
 android {
@@ -10,12 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-//        applicationId = "com.es.notificationcore"
         minSdk = 24
-//        targetSdk = 34
-//        versionCode = 1
-//        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -26,6 +22,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isMinifyEnabled = false
         }
     }
     compileOptions {
@@ -55,4 +54,33 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+
+tasks.register("listComponents") {
+    doLast {
+        println(components.names)
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "com.github.freeskyES"
+                artifactId = "notification-core"
+                version = "1.0.0"
+            }
+
+            create<MavenPublication>("debug") {
+                from(components["debug"])
+
+                groupId = "com.github.freeskyES"
+                artifactId = "notification-core"
+                version = "1.0.0-debug"
+            }
+        }
+    }
 }
