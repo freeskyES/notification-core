@@ -10,8 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import timber.log.Timber
+import javax.inject.Inject
 
-class PermissionHandler(
+class PermissionHandler @Inject constructor(
     private val activity: AppCompatActivity,
 ) {
     private var onPermissionsGranted: (() -> Unit)? = null

@@ -11,3 +11,4 @@ data class NotificationEntity(
     val content: String,
     val timestamp: Long,
 )
+
