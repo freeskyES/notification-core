@@ -7,33 +7,31 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.es.notificationcore.domain.model.NotificationData
-import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
+import com.es.notificationcore.data.noti.Noti
+import com.es.notificationcore.domain.usecase.ParseNotiUseCase
+import com.es.notificationcore.domain.usecase.SaveNotiUseCase
 import com.es.notificationcore.utils.NotificationHelper
 import com.es.notificationcore.utils.NotificationHelper.Companion.NOTIFICATION_ID
-import com.es.notificationcore.utils.NotificationParser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotificationService : NotificationListenerService() {
     @Inject
-    lateinit var notificationParser: NotificationParser
+    lateinit var parseNotiUseCase: ParseNotiUseCase
 
     @Inject
-    lateinit var processNotificationUseCase: ProcessNotificationUseCase
+    lateinit var saveNotiUseCase: SaveNotiUseCase
 
     @Inject
     lateinit var notificationHelper: NotificationHelper
 
-    private val notificationQueue = LinkedBlockingQueue<NotificationData>()
-    private val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+    private val serviceScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
@@ -43,19 +41,6 @@ class NotificationService : NotificationListenerService() {
         notificationHelper.createNotificationChannel()
 
         startForegroundService()
-
-        // 알림 처리 in background
-        executor.execute {
-            while (true) {
-                try {
-                    val notificationData = notificationQueue.take() // 큐에서 대기 중인 작업을 가져옴
-                    processNotification(notificationData)
-                } catch (e: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    break
-                }
-            }
-        }
     }
 
     private fun startForegroundService() {
@@ -83,10 +68,12 @@ class NotificationService : NotificationListenerService() {
         Timber.i("onNotificationPosted")
         sbn ?: return
 
-        val notificationData = notificationParser.parse(sbn)
-        notificationData?.let {
-            Timber.i("onNotificationPosted notificationData : $it")
-            notificationQueue.offer(it) // 큐에 작업을 추가
+        serviceScope.launch {
+            val notificationData = parseNotiUseCase.execute(sbn)
+            notificationData?.let {
+                Timber.i("onNotificationPosted notificationData : $it")
+                processNotification(it)
+            }
         }
     }
 
@@ -99,14 +86,12 @@ class NotificationService : NotificationListenerService() {
         return START_STICKY
     }
 
-    private fun processNotification(notificationData: NotificationData) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // 알림을 처리
-                processNotificationUseCase.execute(notificationData)
-            } catch (e: Exception) {
-                Timber.e("Failed to process notification $e")
-            }
+    private suspend fun processNotification(notificationData: Noti) {
+        try {
+            // 알림을 처리
+            saveNotiUseCase.execute(notificationData)
+        } catch (e: Exception) {
+            Timber.e("Failed to process notification $e")
         }
     }
 
@@ -128,5 +113,6 @@ class NotificationService : NotificationListenerService() {
     override fun onDestroy() {
         super.onDestroy()
         Timber.i("NotificationService destroyed")
+        serviceScope.cancel()
     }
 }

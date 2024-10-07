@@ -2,7 +2,7 @@ package com.es.notificationcore.di
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
-import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
+import com.es.notificationcore.domain.usecase.GetNotiUseCase
 import com.es.notificationcore.presentation.initializer.NotificationInitializer
 import com.es.notificationcore.presentation.initializer.NotificationInitializerImpl
 import com.es.notificationcore.utils.PermissionHandler
@@ -23,12 +23,12 @@ object initializerModule {
     fun provideNotificationInitializer(
         @ActivityContext activity: Context,
         permissionHandler: PermissionHandler,
-        processNotificationUseCase: ProcessNotificationUseCase
+        getNotiUseCase: GetNotiUseCase
     ): NotificationInitializer {
         return NotificationInitializerImpl(
             activity as AppCompatActivity,
             permissionHandler,
-            processNotificationUseCase
+            getNotiUseCase
         )
     }
 

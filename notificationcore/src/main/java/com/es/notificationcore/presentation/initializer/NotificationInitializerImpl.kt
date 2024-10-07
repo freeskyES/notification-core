@@ -2,8 +2,8 @@ package com.es.notificationcore.presentation.initializer
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import com.es.notificationcore.domain.model.NotificationData
-import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
+import com.es.notificationcore.data.noti.Noti
+import com.es.notificationcore.domain.usecase.GetNotiUseCase
 import com.es.notificationcore.presentation.service.NotificationService
 import com.es.notificationcore.utils.PermissionHandler
 import javax.inject.Inject
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class NotificationInitializerImpl @Inject constructor(
     private val activity: AppCompatActivity,
     private val permissionHandler: PermissionHandler,
-    private val processNotificationUseCase: ProcessNotificationUseCase
+    private val getNotiUseCase: GetNotiUseCase
 ) : NotificationInitializer {
 
     override fun initializeAndStartService() {
@@ -30,7 +30,7 @@ class NotificationInitializerImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNotifications(): List<NotificationData> {
-        return processNotificationUseCase.getAllNotifications()
+    override suspend fun getNotifications(): List<Noti> {
+        return getNotiUseCase.execute()
     }
 }

@@ -24,7 +24,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -41,7 +41,11 @@ android {
 }
 
 dependencies {
-    implementation("com.github.freeskyES:notification-core:1.0.2")
+    implementation(project(":notificationcore"))
+//    implementation("com.github.freeskyES:notification-core:1.0.2")
+
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
 
     implementation(libs.timber)
 
