@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity() {
             Observer { notifications ->
                 binding.textView.text =
                     notifications.joinToString("\n\n") {
-                        "Title: ${it.title}, Content: ${it.content}, Timestamp: ${it.timestamp}"
+                        "Title: ${it.base.title}, Content: ${it.base.content}," +
+                                "\npackageName: ${it.appId} +timestamp: ${it.base.notiAt}"
                     }
             },
         )
