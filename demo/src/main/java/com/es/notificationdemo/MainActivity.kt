@@ -11,13 +11,13 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     private val notificationViewModel: NotificationViewModel by viewModels()
 
     @Inject
     lateinit var notificationInitializer: NotificationInitializer
 
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -25,11 +25,15 @@ class MainActivity : AppCompatActivity() {
 
         notificationViewModel.setNotificationInitializer(notificationInitializer)
 
-        notificationViewModel.notifications.observe(this, Observer { notifications ->
-            binding.textView.text = notifications.joinToString("\n\n") {
-                "Title: ${it.title}, Content: ${it.content}, Timestamp: ${it.timestamp}"
-            }
-        })
+        notificationViewModel.notifications.observe(
+            this,
+            Observer { notifications ->
+                binding.textView.text =
+                    notifications.joinToString("\n\n") {
+                        "Title: ${it.title}, Content: ${it.content}, Timestamp: ${it.timestamp}"
+                    }
+            },
+        )
 
         binding.fetchButton.setOnClickListener {
             notificationViewModel.fetchNotifications()
