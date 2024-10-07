@@ -5,11 +5,11 @@ import com.es.notificationcore.data.noti.NotiRepository
 import javax.inject.Inject
 
 class SaveNotiUseCase
-    @Inject
-    constructor(
-        private val repository: NotiRepository,
-    ) {
-        suspend fun execute(noti: Noti) {
-            repository.saveNotification(noti)
-        }
+@Inject
+constructor(
+    private val repository: NotiRepository,
+) {
+    suspend fun execute(noti: Noti) {
+        repository.saveNotification(noti)
     }
+}

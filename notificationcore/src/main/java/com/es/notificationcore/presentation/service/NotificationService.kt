@@ -7,9 +7,14 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.es.notificationcore.data.noti.Noti
 import com.es.notificationcore.domain.usecase.ParseNotiUseCase
 import com.es.notificationcore.domain.usecase.SaveNotiUseCase
+import com.es.notificationcore.presentation.service.worker.NotificationWorker
+import com.es.notificationcore.utils.GsonUtil
 import com.es.notificationcore.utils.NotificationHelper
 import com.es.notificationcore.utils.NotificationHelper.Companion.NOTIFICATION_ID
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,7 +36,7 @@ class NotificationService : NotificationListenerService() {
     @Inject
     lateinit var notificationHelper: NotificationHelper
 
-    private val serviceScope = CoroutineScope(Dispatchers.IO)
+    private val serviceScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreate() {
         super.onCreate()
@@ -60,6 +65,7 @@ class NotificationService : NotificationListenerService() {
                 startForeground(NOTIFICATION_ID, notification)
             }
         } catch (e: Exception) {
+            Timber.e("Error starting foreground service: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -69,10 +75,13 @@ class NotificationService : NotificationListenerService() {
         sbn ?: return
 
         serviceScope.launch {
-            val notificationData = parseNotiUseCase.execute(sbn)
-            notificationData?.let {
+            val noti = parseNotiUseCase.execute(sbn)
+
+            noti?.let {
                 Timber.i("onNotificationPosted notificationData : $it")
-                processNotification(it)
+
+                // process Noti in WorkManger
+                sendToWorkManager(it)
             }
         }
     }
@@ -86,13 +95,18 @@ class NotificationService : NotificationListenerService() {
         return START_STICKY
     }
 
-    private suspend fun processNotification(notificationData: Noti) {
-        try {
-            // 알림을 처리
-            saveNotiUseCase.execute(notificationData)
-        } catch (e: Exception) {
-            Timber.e("Failed to process notification $e")
-        }
+    private fun sendToWorkManager(noti: Noti) {
+        val notiJson = GsonUtil.toJson(noti)
+
+        val inputData = Data.Builder()
+            .putString("noti_data", notiJson)
+            .build()
+
+        val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+            .setInputData(inputData)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(workRequest)
     }
 
     companion object {
@@ -112,7 +126,7 @@ class NotificationService : NotificationListenerService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.i("NotificationService destroyed")
         serviceScope.cancel()
+        Timber.i("NotificationService destroyed")
     }
 }
