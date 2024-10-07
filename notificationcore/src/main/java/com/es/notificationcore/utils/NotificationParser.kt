@@ -1,43 +1,20 @@
 package com.es.notificationcore.utils
 
-import android.content.Intent
+import android.app.Notification
 import android.service.notification.StatusBarNotification
-import com.es.notificationcore.domain.model.NotificationData
 
 class NotificationParser {
-    fun parse(sbn: StatusBarNotification?): NotificationData? {
-        sbn ?: return null
+    fun parseTitle(sbn: StatusBarNotification?): String? = sbn?.notification?.extras?.getString(
+        Notification.EXTRA_TITLE
+    )
 
-        val title = sbn.notification.extras.getString("android.title")
-        val content = sbn.notification.extras.getString("android.text")
-        val timestamp = sbn.postTime
+    fun parseSubTitle(sbn: StatusBarNotification?): String? = sbn?.notification?.extras?.getString(
+        Notification.EXTRA_SUB_TEXT
+    )
 
-        return if (title != null && content != null) {
-            NotificationData(
-                title = title,
-                content = content,
-                timestamp = timestamp,
-            )
-        } else {
-            null
-        }
-    }
+    fun parseContent(sbn: StatusBarNotification?): String? = sbn?.notification?.extras?.getString(
+        Notification.EXTRA_TEXT
+    )
 
-    fun parse(intent: Intent?): NotificationData? {
-        intent ?: return null
-
-        val title = intent.getStringExtra("title")
-        val content = intent.getStringExtra("content")
-        val timestamp = intent.getLongExtra("timestamp", 0)
-
-        return if (title != null && content != null) {
-            NotificationData(
-                title = title,
-                content = content,
-                timestamp = timestamp,
-            )
-        } else {
-            null
-        }
-    }
+    fun parseTimestamp(sbn: StatusBarNotification?): Long? = sbn?.postTime
 }

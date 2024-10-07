@@ -7,11 +7,11 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.es.notificationcore.domain.model.NotificationData
-import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
+import com.es.notificationcore.data.noti.Noti
+import com.es.notificationcore.domain.usecase.ParseNotiUseCase
+import com.es.notificationcore.domain.usecase.SaveNotiUseCase
 import com.es.notificationcore.utils.NotificationHelper
 import com.es.notificationcore.utils.NotificationHelper.Companion.NOTIFICATION_ID
-import com.es.notificationcore.utils.NotificationParser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,15 +24,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NotificationService : NotificationListenerService() {
     @Inject
-    lateinit var notificationParser: NotificationParser
+    lateinit var parseNotiUseCase: ParseNotiUseCase
 
     @Inject
-    lateinit var processNotificationUseCase: ProcessNotificationUseCase
+    lateinit var saveNotiUseCase: SaveNotiUseCase
 
     @Inject
     lateinit var notificationHelper: NotificationHelper
 
-    private val notificationQueue = LinkedBlockingQueue<NotificationData>()
+    private val notificationQueue = LinkedBlockingQueue<Noti>()
     private val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 
     override fun onCreate() {
@@ -83,7 +83,7 @@ class NotificationService : NotificationListenerService() {
         Timber.i("onNotificationPosted")
         sbn ?: return
 
-        val notificationData = notificationParser.parse(sbn)
+        val notificationData = parseNotiUseCase.execute(sbn)
         notificationData?.let {
             Timber.i("onNotificationPosted notificationData : $it")
             notificationQueue.offer(it) // 큐에 작업을 추가
@@ -99,11 +99,11 @@ class NotificationService : NotificationListenerService() {
         return START_STICKY
     }
 
-    private fun processNotification(notificationData: NotificationData) {
+    private fun processNotification(notificationData: Noti) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // 알림을 처리
-                processNotificationUseCase.execute(notificationData)
+                saveNotiUseCase.execute(notificationData)
             } catch (e: Exception) {
                 Timber.e("Failed to process notification $e")
             }

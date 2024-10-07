@@ -2,11 +2,16 @@ package com.es.notificationcore.di
 
 import android.content.Context
 import androidx.room.Room
-import com.es.notificationcore.data.local.NotificationDao
-import com.es.notificationcore.data.local.NotificationDatabase
-import com.es.notificationcore.data.repository.NotificationRepositoryImpl
-import com.es.notificationcore.domain.repository.NotificationRepository
-import com.es.notificationcore.domain.usecase.ProcessNotificationUseCase
+import com.es.notificationcore.data.local.NotiDao
+import com.es.notificationcore.data.local.NotiDatabase
+import com.es.notificationcore.data.noti.DefaultNotiRepository
+import com.es.notificationcore.data.noti.NotiRepository
+import com.es.notificationcore.data.noti.service.DefaultNotiService
+import com.es.notificationcore.data.noti.service.NotiService
+import com.es.notificationcore.data.noti.service.chat.ChatServiceFactory
+import com.es.notificationcore.data.noti.service.chat.WhatsAppChatService
+import com.es.notificationcore.domain.usecase.ParseNotiUseCase
+import com.es.notificationcore.domain.usecase.SaveNotiUseCase
 import com.es.notificationcore.utils.NotificationHelper
 import com.es.notificationcore.utils.NotificationParser
 import dagger.Module
@@ -23,26 +28,57 @@ object AppModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext appContext: Context,
-    ): NotificationDatabase =
+    ): NotiDatabase =
         Room
             .databaseBuilder(
                 appContext,
-                NotificationDatabase::class.java,
+                NotiDatabase::class.java,
                 "notification_database",
             ).build()
 
     @Provides
-    fun provideNotificationDao(db: NotificationDatabase): NotificationDao = db.notificationDao()
+    fun provideNotificationDao(db: NotiDatabase): NotiDao = db.notificationDao()
 
     @Provides
     @Singleton
-    fun provideNotificationRepository(notificationDao: NotificationDao): NotificationRepository =
-        NotificationRepositoryImpl(notificationDao)
+    fun provideNotificationRepository(notiDao: NotiDao): NotiRepository =
+        DefaultNotiRepository(notiDao)
 
     @Provides
     @Singleton
-    fun provideProcessNotificationUseCase(repository: NotificationRepository): ProcessNotificationUseCase =
-        ProcessNotificationUseCase(repository)
+    fun provideNotiService(notificationParser: NotificationParser): NotiService {
+        return DefaultNotiService(notificationParser)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatServiceFactory(): ChatServiceFactory {
+        return ChatServiceFactory()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWhatsAppChatService(): WhatsAppChatService {
+        return WhatsAppChatService()
+    }
+
+    @Provides
+    @Singleton
+    fun provideParseNotiUseCase(
+        notiService: NotiService,
+        chatServiceFactory: ChatServiceFactory
+    ): ParseNotiUseCase {
+        return ParseNotiUseCase(notiService, chatServiceFactory)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveNotiUseCase(
+        repository: NotiRepository
+    ): SaveNotiUseCase {
+        return SaveNotiUseCase(repository)
+    }
+
 
     @Provides
     @Singleton
